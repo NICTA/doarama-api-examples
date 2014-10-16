@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+  <p>
+    <input type="button" value="Play" onclick="handlePlay();">
+    <input type="button" value="Pause" onclick="handlePause();">
+  </p>
+
+  <!-- Replace KKKKKKK with your visualisation key -->
+  <iframe id="doarama-iframe" src="http://api.doarama.com/api/0.2/visualisation?k=KKKKKKK&name=John%20Smith&avatar=http%3A%2F%2Fplacehold.it%2F32x32" width="940px" height="420px" frameborder="0"
+    webkitAllowFullScreen mozAllowFullScreen allowFullScreen></iframe>
+
+  <script>
+      var apiDomain = 'http://api.doarama.com';
+      var apiReady = false;
+
+      // Access the iframe's content window
+      var player = document.getElementById('doarama-iframe').contentWindow;
+
+      // Receive messages from the API
+      function onMessageReceived(e) {
+        if (e.data.method === 'ready') {
+          apiReady = true;
+          console.log('API is ready!');
+        }
+        console.log('client received: ' + JSON.stringify(e.data));
+      }
+
+      window.addEventListener('message', onMessageReceived, false);
+
+      // Only allow posting messages once API is ready
+      function wrapPost(msg) {
+        if (apiReady) {
+          player.postMessage(msg, apiDomain);
+        } else {
+          alert("Doarama Client API not ready yet!");
+        }
+      }
+
+      function handlePlay() {
+        var msg = {
+          "method" : "setPlaying",
+          "value" : true
+        };
+        wrapPost(msg);
+      }
+
+      function handlePause() {
+        var msg = {
+          "method" : "setPlaying",
+          "value" : false
+        };
+        wrapPost(msg);
+      }
+    </script>
+
+</body>
+</html>
