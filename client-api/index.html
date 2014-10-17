@@ -4,12 +4,16 @@
 <body>
 
   <p>
-    <input type="button" value="Play" onclick="handlePlay();">
-    <input type="button" value="Pause" onclick="handlePause();">
+    <input type="button" value="Play" onclick="wrapPost('setPlaying',true)">
+    <input type="button" value="Pause" onclick="wrapPost('setPlaying',false)">
+    <input type="button" value="Hide Stats" onclick="wrapPost('setStatsVisibility',false)">
+    <input type="button" value="Show Stats" onclick="wrapPost('setStatsVisibility',true)">
+    <input type="button" value="Hide Chart" onclick="wrapPost('setChartVisibility',false)">
+    <input type="button" value="Show Chart" onclick="wrapPost('setChartVisibility',true)">
   </p>
 
-  <!-- Replace KKKKKKK with your visualisation key -->
-  <iframe id="doarama-iframe" src="http://api.doarama.com/api/0.2/visualisation?k=KKKKKKK&name=John%20Smith&avatar=http%3A%2F%2Fplacehold.it%2F32x32" width="940px" height="420px" frameborder="0"
+  <!-- Some defaults URL arguments provided for testing -->
+  <iframe id="doarama-iframe" src="http://api.doarama.com/api/0.2/visualisation?k=VeB4BLE&name=Name%20One&name=Name%20Two&name=Name%20Three&name=Name%20Four&name=Name%20Five&avatarBaseUrl=http%3A%2F%2Fmonster-hash.herokuapp.com%2Fmonsterid%2F" width="940px" height="420px" frameborder="0"
     webkitAllowFullScreen mozAllowFullScreen allowFullScreen></iframe>
 
   <script>
@@ -24,14 +28,16 @@
         if (e.data.method === 'ready') {
           apiReady = true;
           console.log('API is ready!');
+        } else {
+          console.log('client received: ' + JSON.stringify(e.data));
         }
-        console.log('client received: ' + JSON.stringify(e.data));
       }
 
       window.addEventListener('message', onMessageReceived, false);
 
       // Only allow posting messages once API is ready
-      function wrapPost(msg) {
+      function wrapPost(method, value) {
+        var msg = {"method" : method, "value" : value};
         if (apiReady) {
           player.postMessage(msg, apiDomain);
         } else {
@@ -39,21 +45,6 @@
         }
       }
 
-      function handlePlay() {
-        var msg = {
-          "method" : "setPlaying",
-          "value" : true
-        };
-        wrapPost(msg);
-      }
-
-      function handlePause() {
-        var msg = {
-          "method" : "setPlaying",
-          "value" : false
-        };
-        wrapPost(msg);
-      }
     </script>
 
 </body>
